@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be Morbidly Curious</title>
+    <style>
+        :root {
+            --bg-color: #0a0b0e;
+            --card-bg: #13161c;
+            --accent: #8b0000;
+            --accent-hover: #a50000;
+            --text: #e0e0e0;
+            --text-muted: #949ba4;
+            --border: #232731;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .layout {
+            display: flex;
+            gap: 24px;
+            max-width: 1250px;
+            width: 100%;
+        }
+
+        .main-panel {
+            flex: 1.1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            position: relative;
+        }
+
+        .side-panel {
+            flex: 1.1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            color: #d11a2a;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            line-height: 1.5;
+            margin: 15px 0;
+            padding: 20px;
+            background: rgba(139, 0, 0, 0.03);
+            border-radius: 8px;
+            border: 1px dashed rgba(139, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        button {
+            flex: 1;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        button.secondary:hover {
+            background-color: var(--border);
+        }
+
+        /* Multiple Recommendations List */
+        .direct-rec-container {
+            margin-top: 24px;
+            padding: 18px;
+            background: rgba(139, 0, 0, 0.05);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            border-radius: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .direct-rec-container h3 {
+            font-size: 0.95rem;
+            color: #d11a2a;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            background: rgba(19, 22, 28, 0.95);
+            padding-bottom: 4px;
+        }
+
+        .rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rec-movie-item {
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .rec-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .rec-pitch {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Semantic Curiosity Category Rows */
+        .theme-row {
+            border-radius: 8px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .theme-row.visceral {
+            background: linear-gradient(135deg, rgba(40, 15, 15, 0.6), rgba(15, 15, 20, 0.8));
+            border-color: #592c2c;
+        }
+
+        .theme-row.psychological {
+            background: linear-gradient(135deg, rgba(25, 20, 40, 0.6), rgba(15, 15, 20, 0.8));
+            border-color: #3b2c59;
+        }
+
+        .theme-row.recreational {
+            background: linear-gradient(135deg, rgba(20, 40, 30, 0.6), rgba(15, 15, 20, 0.8));
+            border-color: #2c593d;
+        }
+
+        .theme-header {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-movies-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .mini-movie-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .mini-movie-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-movie-genre {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Nudge Banner */
+        .nudge-banner {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: linear-gradient(135deg, #8b0000, #500000);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .nudge-banner.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .stats-counter {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+            .theme-movies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <div class="main-panel">
+        <div class="nudge-banner" id="nudgeBanner">⚠️ Your morbid curiosity profile shifted!</div>
+        <h1>Be Morbidly Curious</h1>
+        <p class="subtitle">Explore your boundaries of recreational fear, cinematic dread, and fascination.</p>
+        
+        <div class="question-box" id="question-text">
+            Loading probe...
+        </div>
+
+        <div class="button-group" id="action-buttons">
+            <!-- Buttons injected dynamically -->
+        </div>
+
+        <!-- Dynamic Matching Curiosities -->
+        <div class="direct-rec-container" id="directRecContainer">
+            <h3>Matched Curiosity Recommendations</h3>
+            <div class="rec-list" id="recListContainer">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+        
+        <div class="stats-counter" id="statsCounter">Probes explored: 0</div>
+    </div>
+
+    <div class="side-panel">
+        <h3>Curiosity Dimensions</h3>
+        <p class="subtitle" style="margin-bottom: 4px;">Mapping your threshold from safety to extremes</p>
+        
+        <!-- Category 1: Visceral & Extreme -->
+        <div class="theme-row visceral">
+            <div class="theme-header">🩸 Visceral & Extreme <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Gore, Slasher & Raw Shock)</span></div>
+            <div class="theme-movies-grid" id="rowVisceral"></div>
+        </div>
+
+        <!-- Category 2: Psychological & Paranoia -->
+        <div class="theme-row psychological">
+            <div class="theme-header">🧠 Psychological Dread <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Slow-burn, Paranoia & Cults)</span></div>
+            <div class="theme-movies-grid" id="rowPsychological"></div>
+        </div>
+
+        <!-- Category 3: Recreational & Creature Fear -->
+        <div class="theme-row recreational">
+            <div class="theme-header">🦖 Recreational Thrills <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Creature Features & Accessible Fear)</span></div>
+            <div class="theme-movies-grid" id="rowRecreational"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Expanded Database of 60+ Horror & Fear-Inducing Films categorized by Curiosity Scale
+    const movieDatabase = [
+        // --- VISCERAL & EXTREME (Visceral Category) ---
+        { title: "The Texas Chain Saw Massacre (1974)", category: "visceral", tags: ["gritty", "isolated", "survival", "raw", "slasher", "backwoods"], genre: "Extreme Classic", pitch: "Five youths fall prey to a terrifying chainsaw-wielding family in rural Texas." },
+        { title: "The Hills Have Eyes (1977)", category: "visceral", tags: ["gritty", "isolated", "survival", "raw", "backwoods"], genre: "Backwoods Horror", pitch: "A family stranded in the desert fights mutated, cannibalistic locals." },
+        { title: "Martyrs (2008)", category: "visceral", tags: ["extreme", "suffering", "gore", "raw", "disturbing"], genre: "Extreme French Horror", pitch: "A young woman's quest for revenge spirals into profound existential torture." },
+        { title: "Hostel (2005)", category: "visceral", tags: ["gore", "torture", "extreme", "gritty"], genre: "Splatter / Gore", pitch: "Backpackers in Slovakia fall into a secretive club that tortures tourists." },
+        { title: "Green Room (2015)", category: "visceral", tags: ["grounded", "claustrophobic", "intense", "survival", "gritty"], genre: "Gritty Survival", pitch: "A punk band trapped in a venue fights brutal extremists for survival." },
+        { title: "Terrifier 2 (2022)", category: "visceral", tags: ["gore", "slasher", "extreme", "slapstickgore"], genre: "Modern Slasher", pitch: "Art the Clown returns on Halloween night to terrorize a suburban sibling pair." },
+        { title: "Evil Dead Rise (2023)", category: "visceral", tags: ["gore", "demonic", "fastpaced", "claustrophobic"], genre: "Supernatural Gore", pitch: "Sisters fight for survival inside a cramped Los Angeles apartment complex." },
+        { title: "The House That Jack Built (2018)", category: "visceral", tags: ["serialkiller", "artistic", "disturbing", "extreme"], genre: "Dark Psychological Gore", pitch: "A failed architect recounts five meticulously detailed murders over 12 years." },
+        { title: "High Tension (2003)", category: "visceral", tags: ["slasher", "gore", "twist", "intense"], genre: "French Slasher", pitch: "A weekend getaway at a secluded farmhouse turns into a brutal bloodbath." },
+        { title: "Wolf Creek (2005)", category: "visceral", tags: ["isolated", "survival", "backwoods", "gritty"], genre: "Survival Horror", pitch: "Hitchhikers in the Australian outback are hunted by a sadistic bushman." },
+        { title: "The Devil's Rejects (2005)", category: "visceral", tags: ["backwoods", "gritty", "serialkiller", "raw"], genre: "Road Horror", pitch: "A murderous family goes on a chaotic, violent cross-country rampage." },
+        { title: "Hatchet (2006)", category: "visceral", tags: ["slasher", "gore", "fun", "swamp"], genre: "Splatter Comedy", pitch: "Tourists in a Louisiana swamp awaken a deformed, vengeful local legend." },
+        { title: "Frontière(s) (2007)", category: "visceral", tags: ["extreme", "gore", "survival", "gritty"], genre: "Extreme Survival", pitch: "Criminals flee Paris into the French countryside, stumbling into neo-Nazi cannibals." },
+        { title: "Inside (2007)", category: "visceral", tags: ["gore", "homeinvasion", "extreme", "claustrophobic"], genre: "Home Invasion Horror", pitch: "A grieving pregnant woman is targeted on Christmas Eve by a psychotic intruder." },
+
+        // --- PSYCHOLOGICAL & PARANOIA (Psychological Category) ---
+        { title: "Hereditary (2018)", category: "psychological", tags: ["grief", "cult", "slowburn", "disturbing", "supernatural"], genre: "Psychological Cult Horror", pitch: "A grieving family unravels bizarre and terrifying secrets about their ancestry." },
+        { title: "Midsommar (2019)", category: "psychological", tags: ["cult", "daylight", "folk", "psychological"], genre: "Folk Horror", pitch: "A grieving woman travels to a Swedish midsummer festival that turns sinister." },
+        { title: "The Shining (1980)", category: "psychological", tags: ["isolation", "madness", "slowburn", "classic"], genre: "Psychological Classic", pitch: "A family heads to an isolated winter hotel where a sinister presence drives the father mad." },
+        { title: "Cure (1997)", category: "psychological", tags: ["atmosphere", "slowburn", "investigation", "mystery"], genre: "Hypnotic Thriller", pitch: "A detective tracks murders across Tokyo where killers have no personal motive." },
+        { title: "The Witch (2015)", category: "psychological", tags: ["folk", "historical", "atmosphere", "paranormal"], genre: "Folk Horror", pitch: "A devout family in 1630s New England is torn apart by unseen evil forces." },
+        { title: "Talk to Me (2022)", category: "psychological", tags: ["fastpaced", "modern", "supernatural", "grief"], genre: "Supernatural Thriller", pitch: "Teens accidentally unleash terrifying spirits using an embalmed hand prop." },
+        { title: "Saint Maud (2019)", category: "psychological", tags: ["religious", "slowburn", "madness", "intimate"], genre: "Psychological Drama", pitch: "A pious hospice nurse becomes dangerously obsessed with saving her patient's soul." },
+        { title: "The Blackcoat's Daughter (2015)", category: "psychological", tags: ["atmosphere", "slowburn", "isolated", "dread"], genre: "Atmospheric Horror", pitch: "Quiet dread builds at an isolated boarding school over winter break." },
+        { title: "Rosemary's Baby (1968)", category: "psychological", tags: ["paranoia", "cult", "classic", "slowburn"], genre: "Paranoia Classic", pitch: "An expectant mother grows suspicious of her eccentric neighbors' intentions." },
+        { title: "The Lighthouse (2019)", category: "psychological", tags: ["madness", "isolation", "surreal", "blackandwhite"], genre: "Surreal Horror", pitch: "Two lighthouse keepers gradually lose their sanity on a remote New England rock." },
+        { title: "It Follows (2014)", category: "psychological", tags: ["paranormal", "atmosphere", "unique", "slowburn"], genre: "Supernatural Thriller", pitch: "A young woman is stalked by an implacable supernatural entity passed via connection." },
+        { title: "Black Swan (2010)", category: "psychological", tags: ["madness", "obsession", "bodyhorror", "drama"], genre: "Psychological Drama", pitch: "A ballerina's grip on reality shatters as she wins the lead role in Swan Lake." },
+        { title: "Jacob's Ladder (1990)", category: "psychological", tags: ["surreal", "grief", "paranoia", "hallucination"], genre: "Surreal Horror", pitch: "A Vietnam veteran experiences severe dissociative hallucinations and terrifying visions." },
+        { title: "Babadook (2014)", category: "psychological", tags: ["grief", "motherhood", "atmosphere", "paranormal"], genre: "Psychological Horror", pitch: "A widowed mother wrestles with her son's fears of a malevolent pop-up book entity." },
+
+        // --- RECREATIONAL & CREATURE FEARS (Recreational Category) ---
+        { title: "Jurassic Park (1993)", category: "recreational", tags: ["dinosaurs", "adventure", "survival", "creature"], genre: "Adventure Thriller", pitch: "Cloned prehistoric predators break free across a theme park island." },
+        { title: "Jaws (1975)", category: "recreational", tags: ["ocean", "survival", "classic", "creature"], genre: "Creature Feature", pitch: "A massive great white shark terrorizes a summer resort town." },
+        { title: "Tremors (1990)", category: "recreational", tags: ["creature", "fun", "action", "desert"], genre: "Monster Comedy Horror", pitch: "Nevada desert residents fight giant, subterranean worm-like predators." },
+        { title: "Alien (1979)", category: "recreational", tags: ["space", "creature", "claustrophobic", "sci-fi"], genre: "Sci-Fi Horror", pitch: "A commercial crew encounters a hostile, parasitic extraterrestrial lifeform." },
+        { title: "The Thing (1982)", category: "recreational", tags: ["paranoid", "creature", "isolated", "bodyhorror"], genre: "Sci-Fi Horror Classic", pitch: "Researchers in Antarctica encounter a shape-shifting alien organism." },
+        { title: "Predator (1987)", category: "recreational", tags: ["action", "jungle", "survival", "creature"], genre: "Sci-Fi Action Horror", pitch: "An elite rescue team is hunted in a Central American jungle by an alien warrior." },
+        { title: "A Quiet Place (2018)", category: "recreational", tags: ["survival", "monsters", "sound", "tense"], genre: "Monster Survival", pitch: "A family must navigate life in silence to avoid blind monsters hunting by sound." },
+        { title: "Gremlins (1984)", category: "recreational", tags: ["fun", "creature", "holiday", "mischief"], genre: "Horror Comedy", pitch: "A young man inadvertently unleashes a horde of destructive monsters on his town." },
+        { title: "Deep Blue Sea (1999)", category: "recreational", tags: ["ocean", "sharks", "action", "fun"], genre: "Action Horror", pitch: "Genetically modified sharks hunt researchers trapped in an undersea facility." },
+        { title: "Anaconda (1997)", category: "recreational", tags: ["jungle", "creature", "survival", "fun"], genre: "Adventure Horror", pitch: "A documentary crew filming in the Amazon falls prey to a massive snake." },
+        { title: "Crawl (2019)", category: "recreational", tags: ["survival", "alligators", "floods", "tense"], genre: "Disaster Horror", pitch: "A woman trapped in a flooding house during a hurricane fights giant alligators." },
+        { title: "The Mist (2007)", category: "recreational", tags: ["monsters", "fog", "bleak", "survival"], genre: "Cosmic Monster Horror", pitch: "Townspeople trapped in a supermarket face terrifying entities lurking in an unnatural fog." },
+        { title: "Arachnophobia (1990)", category: "recreational", tags: ["spiders", "fun", "smalltown", "creature"], genre: "Creature Feature", pitch: "A venomous spider from South America breeds a deadly infestation in a California town." },
+        { title: "The Blob (1988)", category: "recreational", tags: ["creature", "gory", "fun", "sci-fi"], genre: "Sci-Fi Splatter", pitch: "An unstoppable extraterrestrial gelatinous mass consumes everything in its path." },
+        { title: "Lake Placid (1999)", category: "recreational", tags: ["crocodile", "fun", "comedy", "creature"], genre: "Monster Comedy", pitch: "An eccentric team investigates a massive 30-foot crocodile in a Maine lake." },
+        { title: "Slither (2006)", category: "recreational", tags: ["parasites", "fun", "bodyhorror", "gore"], genre: "Sci-Fi Body Horror", pitch: "A small town is infected by a parasitic alien slug organism turning residents into monsters." }
+    ];
+
+    // Morbid Curiosity & Fear Probing Questions
+    const questionsPool = [
+        { 
+            id: 1, 
+            q: "Do you find yourself drawn to brutal, raw survival stories, or do you prefer high-stakes recreational creature thrills?", 
+            opt1Text: "Raw survival & human extremes", tag1: "raw", 
+            opt2Text: "Creature thrills & monsters", tag2: "creature" 
+        },
+        { 
+            id: 2, 
+            q: "Would you rather explore isolated, backwoods territory, or claustrophobic, trapped indoor spaces?", 
+            opt1Text: "Remote backwoods / outback", tag1: "isolated", 
+            opt2Text: "Claustrophobic indoors", tag2: "claustrophobic" 
+        },
+        { 
+            id: 3, 
+            q: "Are you curious about real-world visceral shock/gore, or do you lean toward slow-burn psychological paranoia?", 
+            opt1Text: "Visceral gore & extremes", tag1: "gore", 
+            opt2Text: "Slow-burn psychological dread", tag2: "slowburn" 
+        },
+        { 
+            id: 4, 
+            q: "Do you enjoy stories involving secret cults and ritualistic practices, or fast-paced physical action?", 
+            opt1Text: "Cults & dark rituals", tag1: "cult", 
+            opt2Text: "Fast-paced physical action", tag2: "action" 
+        },
+        { 
+            id: 5, 
+            q: "Does the idea of cosmic or supernatural unknowns fascinate you more than terrestrial threats like serial killers or wild beasts?", 
+            opt1Text: "Supernatural / unknown", tag1: "paranormal", 
+            opt2Text: "Serial killers / wild beasts", tag2: "serialkiller" 
+        },
+        { 
+            id: 6, 
+            q: "Are you looking for bleak, nihilistic nightmares, or fun, high-energy entertainment?", 
+            opt1Text: "Bleak & uncompromising", tag1: "disturbing", 
+            opt2Text: "Fun & entertaining thrills", tag2: "fun" 
+        },
+        { 
+            id: 7, 
+            q: "Would you want to experience fear driven by deep emotional grief and trauma, or pure cinematic adrenaline?", 
+            opt1Text: "Trauma & psychological weight", tag1: "grief", 
+            opt2Text: "Pure cinematic adrenaline", tag1_alt: "intense" 
+        }
+    ];
+
+    let userWeights = {};
+    let questionsAnswered = 0;
+    let usedQuestionIds = [];
+    let lastTopKeys = "";
+    let questionsSinceNotification = 0;
+    let currentQuestion = null;
+
+    function pickNewQuestion() {
+        let available = questionsPool.filter(q => !usedQuestionIds.includes(q.id));
+        if (available.length === 0) {
+            usedQuestionIds = [];
+            available = questionsPool;
+        }
+
+        currentQuestion = available[Math.floor(Math.random() * available.length)];
+        usedQuestionIds.push(currentQuestion.id);
+
+        document.getElementById('question-text').innerText = currentQuestion.q;
+        
+        const btnContainer = document.getElementById('action-buttons');
+        btnContainer.innerHTML = `
+            <button onclick="answerQuestion(1)">${currentQuestion.opt1Text}</button>
+            <button class="secondary" onclick="answerQuestion(2)">${currentQuestion.opt2Text}</button>
+        `;
+    }
+
+    function answerQuestion(choiceNum) {
+        const activeTag = (choiceNum === 1) ? currentQuestion.tag1 : currentQuestion.tag2;
+        userWeights[activeTag] = (userWeights[activeTag] || 0) + 4;
+
+        questionsAnswered++;
+        questionsSinceNotification++;
+        document.getElementById('statsCounter').innerText = `Probes explored: ${questionsAnswered}`;
+
+        const sorted = getSortedMovies();
+        const topKeys = sorted.slice(0, 3).map(m => m.title).join(',');
+
+        if (topKeys !== lastTopKeys || questionsSinceNotification >= 3) {
+            if (topKeys !== lastTopKeys && lastTopKeys !== "") {
+                triggerNudge();
+            } else if (questionsSinceNotification >= 3) {
+                triggerNudge();
+            }
+            lastTopKeys = topKeys;
+            questionsSinceNotification = 0;
+        }
+
+        updateUI();
+        pickNewQuestion();
+    }
+
+    function triggerNudge() {
+        const banner = document.getElementById('nudgeBanner');
+        banner.classList.add('show');
+        setTimeout(() => {
+            banner.classList.remove('show');
+        }, 3500);
+    }
+
+    function getSortedMovies() {
+        return movieDatabase.map(movie => {
+            let score = 4; // Base score
+            movie.tags.forEach(t => {
+                if (userWeights[t]) {
+                    score += userWeights[t] * 6;
+                }
+            });
+            return { ...movie, score };
+        }).sort((a, b) => b.score - a.score);
+    }
+
+    function updateUI() {
+        const sorted = getSortedMovies();
+        
+        // Update Matching List
+        const recListContainer = document.getElementById('recListContainer');
+        recListContainer.innerHTML = '';
+
+        const matchingMovies = sorted.filter(m => m.score > 4).slice(0, 6);
+        const displayList = matchingMovies.length > 0 ? matchingMovies : sorted.slice(0, 3);
+
+        displayList.forEach(movie => {
+            const item = document.createElement('div');
+            item.className = 'rec-movie-item';
+            item.innerHTML = `
+                <div class="rec-title">${movie.title} <span style="font-size:0.75rem; font-weight:normal; color:var(--text-muted);">(${movie.genre})</span></div>
+                <div class="rec-pitch">${movie.pitch}</div>
+            `;
+            recListContainer.appendChild(item);
+        });
+
+        // Update Theme Rows
+        updateThemeCategory('rowVisceral', 'visceral', sorted);
+        updateThemeCategory('rowPsychological', 'psychological', sorted);
+        updateThemeCategory('rowRecreational', 'recreational', sorted);
+    }
+
+    function updateThemeCategory(containerId, categoryKey, sortedMovies) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        const categoryMovies = sortedMovies.filter(m => m.category === categoryKey).slice(0, 3);
+
+        categoryMovies.forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'mini-movie-card';
+            card.innerHTML = `
+                <div class="mini-movie-title" title="${movie.title}">${movie.title}</div>
+                <div class="mini-movie-genre">${movie.genre.split('/')[0]}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    window.onload = function() {
+        pickNewQuestion();
+        updateUI();
+    };
+</script>
+
+</body>
+</html>
